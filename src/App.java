@@ -3,10 +3,10 @@ import java.io.FileReader;
 
 public class App {
 
-    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD_Daily_20_Rows.csv";
+    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD 2004-2022 No Weekends.csv";
 
     public static void main(String[] args) {
-
+        analysePreviousDayHighLowPierced();
     }
 
     public static void analysePreviousDayHighLowPierced() {
@@ -16,7 +16,7 @@ public class App {
         Row currentRow = new Row();
         int numDaysPreviousHighLowPierced = 0;
         int numDays = 0;
-         
+
         try (FileReader fileReader = new FileReader(csvLocation)) {
             BufferedReader csvReader = new BufferedReader(fileReader);
             csvReader.readLine();
@@ -42,6 +42,5 @@ public class App {
         System.out.printf("Raw: %d/%d\n", numDaysPreviousHighLowPierced, numDays);
         System.out.printf("Percentage %f %%", ((float) numDaysPreviousHighLowPierced / numDays) * 100);
     }
-
 
 }
