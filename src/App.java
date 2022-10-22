@@ -9,11 +9,32 @@ public class App {
 
     public static void main(String[] args) {
         analyseOutsideBar();
+
         System.out.println();
+        System.out.println();
+
         analyseInsideBar();
     }
 
+
+
     public static void analyseInsideBar() {
+        BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() <= previous.getHigh() && current.getLow() >= previous.getLow();
+        Result result = testCurrentDayComparedToPrevious(currentDayIsInsideYesterday);
+
+        System.out.println("Number of days where the current day is an inside bar");
+        displayResult(result);
+    }
+
+    public static void analyseOutsideBar() {
+        BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() >= previous.getHigh() && current.getLow() <= previous.getLow();
+        Result result = testCurrentDayComparedToPrevious(currentDayIsInsideYesterday);
+
+        System.out.println("Number of days the current day is an outside bar");
+        displayResult(result);
+    }
+
+    public static Result testCurrentDayComparedToPrevious(BiPredicate<Row, Row> condition) {
         String previousRowString = "";
         String currentRowString = "";
         Row previousRow = new Row();
@@ -29,9 +50,7 @@ public class App {
                 previousRow.initialiseRow(previousRowString);
                 currentRow.initialiseRow(currentRowString);
 
-
-
-                if (currentRow.getHigh() <= previousRow.getHigh() && currentRow.getLow() >= previousRow.getLow())
+                if (condition.test(previousRow, currentRow))
                     numDaysTestPassed ++;
 
                 numDays += 2;
@@ -40,47 +59,16 @@ public class App {
             System.out.println(e.getMessage());
         }
 
-        System.out.println("Number of days where the current day is an inside bar");
-        displayResult(numDaysTestPassed, numDays);
-    }
-
-
-
-    public static void analyseOutsideBar() {
-        String previousRowString = "";
-        String currentRowString = "";
-        Row previousRow = new Row();
-        Row currentRow = new Row();
-        int numDaysPreviousHighLowPierced = 0;
-        int numDays = 0;
-
-        try (FileReader fileReader = new FileReader(csvLocation)) {
-            BufferedReader csvReader = new BufferedReader(fileReader);
-            csvReader.readLine();
-
-            while ((previousRowString = csvReader.readLine()) != null && (currentRowString = csvReader.readLine()) != null) {
-                previousRow.initialiseRow(previousRowString);
-                currentRow.initialiseRow(currentRowString);
-
-                if (currentRow.getHigh() >= previousRow.getHigh() && currentRow.getLow() <= previousRow.getLow())
-                    numDaysPreviousHighLowPierced ++;
-                numDays += 2;
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        System.out.println("Number of days the current day is an outside bar");
-        displayResult(numDaysPreviousHighLowPierced, numDays);
+        return new Result(numDays, numDaysTestPassed);
     }
 
     public static float getTargetCoverPriceByPercent(float percent, float startingPrice, float endingPrice) {
         float range = Math.abs(endingPrice - startingPrice);
         return range * percent;
     }
-    private static void displayResult(int numDaysPreviousHighLowPierced, int numDays) {
-        System.out.printf("Raw: %d/%d\n", numDaysPreviousHighLowPierced, numDays);
-        System.out.printf("Percentage %f %%", ((float) numDaysPreviousHighLowPierced / numDays) * 100);
+    private static void displayResult(Result result) {
+        System.out.printf("Raw: %d/%d\n", result.getNumDaysPassedTest(), result.getTotalNumDays());
+        System.out.printf("Percentage %f %%", result.getPercentage());
     }
 
 }

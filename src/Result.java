@@ -1,6 +1,6 @@
 public class Result {
-    int totalNumDays = 0;
-    int numDaysPassedTest = 0;
+    private int totalNumDays = 0;
+    private int numDaysPassedTest = 0;
 
     public Result(int totalNumDays, int numDaysPassedTest) {
         this.totalNumDays = totalNumDays;
