@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -22,16 +23,14 @@ public class App {
         BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() <= previous.getHigh() && current.getLow() >= previous.getLow();
         Result result = testCurrentDayComparedToPrevious(currentDayIsInsideYesterday);
 
-        System.out.println("Number of days where the current day is an inside bar");
-        displayResult(result);
+        displayResult(result, "Number of days where the current day is an inside bar");
     }
 
     public static void analyseOutsideBar() {
         BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() >= previous.getHigh() && current.getLow() <= previous.getLow();
         Result result = testCurrentDayComparedToPrevious(currentDayIsInsideYesterday);
 
-        System.out.println("Number of days the current day is an outside bar");
-        displayResult(result);
+        displayResult(result, "Number of days the current day is an outside bar");
     }
 
     public static Result testCurrentDayComparedToPrevious(BiPredicate<Row, Row> condition) {
@@ -66,7 +65,10 @@ public class App {
         float range = Math.abs(endingPrice - startingPrice);
         return range * percent;
     }
-    private static void displayResult(Result result) {
+    private static void displayResult(Result result, String message) {
+        System.out.println(message);
+        message.chars().forEach(c -> System.out.print("-"));
+        System.out.println();
         System.out.printf("Raw: %d/%d\n", result.getNumDaysPassedTest(), result.getTotalNumDays());
         System.out.printf("Percentage %f %%", result.getPercentage());
     }
