@@ -10,14 +10,27 @@ public class App {
 
     public static void main(String[] args) {
         analyseOutsideBar();
-
         System.out.println();
         System.out.println();
-
         analyseInsideBar();
+        System.out.println();
+        System.out.println();
+        analyseHalfBar();
     }
 
 
+    public static void analyseHalfBar() {
+        BiPredicate<Row, Row> currentDayFillsHalfYesterday = (previous, current) ->  {
+            float targetMove = getTargetCoverPriceByPercent(0.5f, previous.getLow(), previous.getHigh());
+            float targetFromLow = previous.getLow() + targetMove;
+            float targetFromHigh = previous.getHigh() - targetMove;
+
+            return current.getHigh() >= targetFromLow && current.getLow() <= targetFromHigh;
+        };
+        Result result = testCurrentDayComparedToPrevious(currentDayFillsHalfYesterday);
+
+        displayResult(result, "Number of days where current day moves at least 50% of the previous day");
+    }
 
     public static void analyseInsideBar() {
         BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() <= previous.getHigh() && current.getLow() >= previous.getLow();
