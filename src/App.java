@@ -21,16 +21,11 @@ public class App {
     }
 
     public static void analysePreviousCloseSameAsCurrentClose() {
-        BiPredicate<Row, Row> previousAndCurrentCloseDirectionEqual = (previous, current) -> {
-            ClosingDirection previousDayClosingDirection = getClosingDirection(previous.getOpen(), previous.getClose());
-            ClosingDirection currentDayClosingDirection = getClosingDirection(current.getOpen(), current.getClose());
-            return previousDayClosingDirection == currentDayClosingDirection;
-        };
+        BiPredicate<Row, Row> previousAndCurrentCloseDirectionEqual = (previous, current) -> previous.getClosingDirection() == current.getClosingDirection();
 
         Result result = testCurrentDayComparedToPrevious(previousAndCurrentCloseDirectionEqual);
         displayResult(result, "Number of days where current day closes in the same direction as the previous day");
     }
-
 
     public static void analysePierceAndCover(double percent) {
         BiPredicate<Row, Row> currentDayPiercesAndRetracesBy = (previous, current) ->  {
@@ -101,9 +96,6 @@ public class App {
         return range * percent;
     }
 
-    public static ClosingDirection getClosingDirection(double openPrice, double closePrice) {
-        return openPrice > closePrice ? ClosingDirection.BULLISH : openPrice == closePrice ? ClosingDirection.UNDECIDED : ClosingDirection.BEARISH;
-    }
     private static void displayResult(Result result, String message) {
         System.out.println(message);
         message.chars().forEach(c -> System.out.print("-"));

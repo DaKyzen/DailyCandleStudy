@@ -47,4 +47,8 @@ public class Row {
     public double getVolume() {
         return volume;
     }
+
+    public ClosingDirection getClosingDirection() {
+        return this.open > this.close ? ClosingDirection.BULLISH : this.open == this.close ? ClosingDirection.UNDECIDED : ClosingDirection.BEARISH;
+    }
 }
