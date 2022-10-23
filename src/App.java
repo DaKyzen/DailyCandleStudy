@@ -4,8 +4,8 @@ import java.util.function.BiPredicate;
 
 public class App {
 
-//    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD 2004-2022 No Weekends.csv";
-    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD_Daily_20_Rows.csv";
+    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD 2004-2022 No Weekends.csv";
+//    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD_Daily_20_Rows.csv";
 
     public static void main(String[] args) {
         analyseOutsideBar();
@@ -19,21 +19,21 @@ public class App {
 
 
     public static void analysePierceAndCover(double percent) {
-        BiPredicate<Row, Row> currentDayFillsHalfYesterday = (previous, current) ->  {
-            double distanceToMove = getPriceRange(percent, previous.getLow(), previous.getHigh());
+        BiPredicate<Row, Row> currentDayPiercesAndRetracesBy = (previous, current) ->  {
+            double distanceToMove = getPercentageOfPriceRange(percent, previous.getLow(), previous.getHigh());
             double targetFromLow = previous.getLow() + distanceToMove;
             double targetFromHigh = previous.getHigh() - distanceToMove;
 
             boolean isPreviousHighPierced = current.getHigh() >= previous.getHigh();
             boolean isPreviousLowPierced = current.getLow() <= previous.getLow();
-            boolean isCurrentHighDistanceCovered = current.getHigh() >= targetFromLow;
-            boolean isCurrentLowDistanceCovered = current.getLow() <= targetFromHigh;
+            boolean isTargetFromLowCovered = current.getHigh() >= targetFromLow;
+            boolean isTargetFromHighCovered = current.getLow() <= targetFromHigh;
 
-            return (isPreviousHighPierced && isCurrentLowDistanceCovered) || (isPreviousLowPierced && isCurrentHighDistanceCovered);
+            return (isPreviousHighPierced && isTargetFromHighCovered) || (isPreviousLowPierced && isTargetFromLowCovered);
         };
-        Result result = testCurrentDayComparedToPrevious(currentDayFillsHalfYesterday);
+        Result result = testCurrentDayComparedToPrevious(currentDayPiercesAndRetracesBy);
 
-        displayResult(result, "Number of days where current day moves at least 50% of the previous day");
+        displayResult(result, String.format("Number of days where current day moves at least %.0f%% of the previous day", percent * 100));
     }
 
     public static void analyseInsideBar() {
@@ -82,7 +82,7 @@ public class App {
         return new Result(numDays, numDaysTestPassed);
     }
 
-    public static double getPriceRange(double percent, double startingPrice, double endingPrice) {
+    public static double getPercentageOfPriceRange(double percent, double startingPrice, double endingPrice) {
         double range = Math.abs(endingPrice - startingPrice);
         return range * percent;
     }
