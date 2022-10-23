@@ -57,9 +57,9 @@ public class Row {
         double bodyRange = Math.abs(this.open - this.close);
         double ratio = bodyRange / range;
         BarType barType = BarType.STRONG;
-        if (ratio < BarType.STRONG.getRatio() && ratio >= BarType.MEDIUM.getRatio())
+        if (ratio < BarType.STRONG.getRatio() && ratio > BarType.DOJI.getRatio())
             barType = BarType.MEDIUM;
-        else
+        else if (ratio <= BarType.DOJI.getRatio())
             barType = BarType.DOJI;
         return barType;
     }
