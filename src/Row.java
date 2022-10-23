@@ -51,4 +51,16 @@ public class Row {
     public ClosingDirection getClosingDirection() {
         return this.open > this.close ? ClosingDirection.BULLISH : this.open == this.close ? ClosingDirection.UNDECIDED : ClosingDirection.BEARISH;
     }
+
+    public BarType getBarType() {
+        double range = Math.abs(this.high - this.low);
+        double bodyRange = Math.abs(this.open - this.close);
+        double ratio = bodyRange / range;
+        BarType barType = BarType.STRONG;
+        if (ratio < BarType.STRONG.getRatio() && ratio >= BarType.MEDIUM.getRatio())
+            barType = BarType.MEDIUM;
+        else
+            barType = BarType.DOJI;
+        return barType;
+    }
 }
