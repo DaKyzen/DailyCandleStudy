@@ -15,6 +15,20 @@ public class App {
         System.out.println();
         System.out.println();
         analysePierceAndCover(0.5);
+        System.out.println();
+        System.out.println();
+        analysePreviousCloseSameAsCurrentClose();
+    }
+
+    public static void analysePreviousCloseSameAsCurrentClose() {
+        BiPredicate<Row, Row> previousAndCurrentCloseDirectionEqual = (previous, current) -> {
+            ClosingDirection previousDayClosingDirection = getClosingDirection(previous.getOpen(), previous.getClose());
+            ClosingDirection currentDayClosingDirection = getClosingDirection(current.getOpen(), current.getClose());
+            return previousDayClosingDirection == currentDayClosingDirection;
+        };
+
+        Result result = testCurrentDayComparedToPrevious(previousAndCurrentCloseDirectionEqual);
+        displayResult(result, "Number of days where current day closes in the same direction as the previous day");
     }
 
 
@@ -31,8 +45,8 @@ public class App {
 
             return (isPreviousHighPierced && isTargetFromHighCovered) || (isPreviousLowPierced && isTargetFromLowCovered);
         };
-        Result result = testCurrentDayComparedToPrevious(currentDayPiercesAndRetracesBy);
 
+        Result result = testCurrentDayComparedToPrevious(currentDayPiercesAndRetracesBy);
         displayResult(result, String.format("Number of days where current day moves at least %.0f%% of the previous day", percent * 100));
     }
 
@@ -85,6 +99,10 @@ public class App {
     public static double getPercentageOfPriceRange(double percent, double startingPrice, double endingPrice) {
         double range = Math.abs(endingPrice - startingPrice);
         return range * percent;
+    }
+
+    public static ClosingDirection getClosingDirection(double openPrice, double closePrice) {
+        return openPrice > closePrice ? ClosingDirection.BULLISH : openPrice == closePrice ? ClosingDirection.UNDECIDED : ClosingDirection.BEARISH;
     }
     private static void displayResult(Result result, String message) {
         System.out.println(message);
