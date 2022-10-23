@@ -1,12 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 public class App {
 
-    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD 2004-2022 No Weekends.csv";
+//    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD 2004-2022 No Weekends.csv";
+    private static String csvLocation = "C:\\Users\\kldep\\OneDrive\\Forex\\EURUSD_Daily_20_Rows.csv";
 
     public static void main(String[] args) {
         analyseOutsideBar();
@@ -15,17 +14,22 @@ public class App {
         analyseInsideBar();
         System.out.println();
         System.out.println();
-        analyseHalfBar();
+        analysePierceAndCover(0.5);
     }
 
 
-    public static void analyseHalfBar() {
+    public static void analysePierceAndCover(double percent) {
         BiPredicate<Row, Row> currentDayFillsHalfYesterday = (previous, current) ->  {
-            float targetMove = getTargetCoverPriceByPercent(0.5f, previous.getLow(), previous.getHigh());
-            float targetFromLow = previous.getLow() + targetMove;
-            float targetFromHigh = previous.getHigh() - targetMove;
+            double distanceToMove = getPriceRange(percent, previous.getLow(), previous.getHigh());
+            double targetFromLow = previous.getLow() + distanceToMove;
+            double targetFromHigh = previous.getHigh() - distanceToMove;
 
-            return current.getHigh() >= targetFromLow && current.getLow() <= targetFromHigh;
+            boolean isPreviousHighPierced = current.getHigh() >= previous.getHigh();
+            boolean isPreviousLowPierced = current.getLow() <= previous.getLow();
+            boolean isCurrentHighDistanceCovered = current.getHigh() >= targetFromLow;
+            boolean isCurrentLowDistanceCovered = current.getLow() <= targetFromHigh;
+
+            return (isPreviousHighPierced && isCurrentLowDistanceCovered) || (isPreviousLowPierced && isCurrentHighDistanceCovered);
         };
         Result result = testCurrentDayComparedToPrevious(currentDayFillsHalfYesterday);
 
@@ -58,14 +62,18 @@ public class App {
             BufferedReader csvReader = new BufferedReader(fileReader);
             csvReader.readLine();
 
-            while ((previousRowString = csvReader.readLine()) != null && (currentRowString = csvReader.readLine()) != null) {
+            previousRowString = csvReader.readLine();
+            numDays++;
+
+            while ((currentRowString = csvReader.readLine()) != null) {
                 previousRow.initialiseRow(previousRowString);
                 currentRow.initialiseRow(currentRowString);
 
                 if (condition.test(previousRow, currentRow))
                     numDaysTestPassed ++;
 
-                numDays += 2;
+                numDays ++;
+                previousRowString = currentRowString;
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -74,8 +82,8 @@ public class App {
         return new Result(numDays, numDaysTestPassed);
     }
 
-    public static float getTargetCoverPriceByPercent(float percent, float startingPrice, float endingPrice) {
-        float range = Math.abs(endingPrice - startingPrice);
+    public static double getPriceRange(double percent, double startingPrice, double endingPrice) {
+        double range = Math.abs(endingPrice - startingPrice);
         return range * percent;
     }
     private static void displayResult(Result result, String message) {

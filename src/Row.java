@@ -1,10 +1,10 @@
 public class Row {
     private String gmtTime;
-    private float open;
-    private float high;
-    private float low;
-    private float close;
-    private float volume;
+    private double open;
+    private double high;
+    private double low;
+    private double close;
+    private double volume;
 
     public Row(String stringRow) {
         initialiseRow(stringRow);
@@ -17,34 +17,34 @@ public class Row {
     public void initialiseRow(String stringRow) {
         String[] split = stringRow.split(",");
         this.gmtTime = split[Column.GMT_TIME.getIndex()];
-        this.open = Float.parseFloat(split[Column.OPEN.getIndex()]);
-        this.high = Float.parseFloat(split[Column.HIGH.getIndex()]);
-        this.low = Float.parseFloat(split[Column.LOW.getIndex()]);
-        this.close = Float.parseFloat(split[Column.CLOSE.getIndex()]);
-        this.volume = Float.parseFloat(split[Column.VOLUME.getIndex()]);
+        this.open = Double.parseDouble(split[Column.OPEN.getIndex()]);
+        this.high = Double.parseDouble(split[Column.HIGH.getIndex()]);
+        this.low = Double.parseDouble(split[Column.LOW.getIndex()]);
+        this.close = Double.parseDouble(split[Column.CLOSE.getIndex()]);
+        this.volume = Double.parseDouble(split[Column.VOLUME.getIndex()]);
     }
 
     public String getGmtTime() {
         return gmtTime;
     }
 
-    public float getOpen() {
+    public double getOpen() {
         return open;
     }
 
-    public float getHigh() {
+    public double getHigh() {
         return high;
     }
 
-    public float getLow() {
+    public double getLow() {
         return low;
     }
 
-    public float getClose() {
+    public double getClose() {
         return close;
     }
 
-    public float getVolume() {
+    public double getVolume() {
         return volume;
     }
 }
