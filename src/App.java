@@ -11,20 +11,16 @@ public class App {
 
     }
 
-    public static void analyseBarType(BarType barType) {
+    public static Result analyseBarType(BarType barType) {
         BiPredicate<Row, Row> testBarType = (previous, current) -> previous.getBarType() == barType;
-
-        Result result = getResult(testBarType);
-        displayResult(result, "Number of days where the day closes " + barType);
+        return getResult(testBarType);
     }
-    public static void analysePreviousCloseSameAsCurrentClose() {
+    public static Result analysePreviousCloseSameAsCurrentClose() {
         BiPredicate<Row, Row> previousAndCurrentCloseDirectionEqual = (previous, current) -> previous.getClosingDirection() == current.getClosingDirection();
-
-        Result result = getResult(previousAndCurrentCloseDirectionEqual);
-        displayResult(result, "Number of days where current day closes in the same direction as the previous day");
+        return getResult(previousAndCurrentCloseDirectionEqual);
     }
 
-    public static void analysePierceAndCover(double percent) {
+    public static Result analysePierceAndCover(double percent) {
         BiPredicate<Row, Row> currentDayPiercesAndRetracesBy = (previous, current) ->  {
             double distanceToMove = getPercentageOfPriceRange(percent, previous.getLow(), previous.getHigh());
             double targetFromLow = previous.getLow() + distanceToMove;
@@ -38,22 +34,17 @@ public class App {
             return (isPreviousHighPierced && isTargetFromHighCovered) || (isPreviousLowPierced && isTargetFromLowCovered);
         };
 
-        Result result = getResult(currentDayPiercesAndRetracesBy);
-        displayResult(result, String.format("Number of days where current day moves at least %.0f%% of the previous day", percent * 100));
+        return getResult(currentDayPiercesAndRetracesBy);
     }
 
-    public static void analyseInsideBar() {
+    public static Result analyseInsideBar() {
         BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() <= previous.getHigh() && current.getLow() >= previous.getLow();
-        Result result = getResult(currentDayIsInsideYesterday);
-
-        displayResult(result, "Number of days where the current day is an inside bar");
+        return getResult(currentDayIsInsideYesterday);
     }
 
-    public static void analyseOutsideBar() {
+    public static Result analyseOutsideBar() {
         BiPredicate<Row, Row> currentDayIsInsideYesterday = (previous, current) -> current.getHigh() >= previous.getHigh() && current.getLow() <= previous.getLow();
-        Result result = getResult(currentDayIsInsideYesterday);
-
-        displayResult(result, "Number of days the current day is an outside bar");
+        return getResult(currentDayIsInsideYesterday);
     }
 
     public static Result getResult(BiPredicate<Row, Row> condition) {
