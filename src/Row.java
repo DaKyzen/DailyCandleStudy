@@ -5,6 +5,8 @@ public class Row {
     private double low;
     private double close;
     private double volume;
+    private ClosingDirection closingDirection;
+    private BarType barType;
 
     public Row(String stringRow) {
         initialiseRow(stringRow);
@@ -22,6 +24,8 @@ public class Row {
         this.low = Double.parseDouble(split[Column.LOW.getIndex()]);
         this.close = Double.parseDouble(split[Column.CLOSE.getIndex()]);
         this.volume = Double.parseDouble(split[Column.VOLUME.getIndex()]);
+        this.closingDirection = getClosingDirection();
+        this.barType = getBarType();
     }
 
     public String getGmtTime() {
@@ -53,7 +57,7 @@ public class Row {
     }
 
     public BarType getBarType() {
-        double range = Math.abs(this.high - this.low);
+        double range = this.getPriceRange();
         double bodyRange = Math.abs(this.open - this.close);
         double ratio = bodyRange / range;
         BarType barType = BarType.STRONG;
@@ -62,5 +66,9 @@ public class Row {
         else if (ratio <= BarType.DOJI.getRatio())
             barType = BarType.DOJI;
         return barType;
+    }
+
+    public double getPriceRange() {
+        return Math.abs(this.high - this.low);
     }
 }
