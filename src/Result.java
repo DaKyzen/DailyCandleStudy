@@ -19,4 +19,12 @@ public class Result {
         return (float) numDaysPassedTest / totalNumDays * 100;
     }
 
+    private void display(String message) {
+        System.out.println(message);
+        message.chars().forEach(c -> System.out.print("-"));
+        System.out.println();
+        System.out.printf("Raw: %d/%d\n", this.numDaysPassedTest, this.totalNumDays);
+        System.out.printf("Percentage %f %%", this.getPercentage());
+    }
+
 }

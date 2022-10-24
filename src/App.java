@@ -84,12 +84,6 @@ public class App {
         return range * percent;
     }
 
-    private static void displayResult(Result result, String message) {
-        System.out.println(message);
-        message.chars().forEach(c -> System.out.print("-"));
-        System.out.println();
-        System.out.printf("Raw: %d/%d\n", result.getNumDaysPassedTest(), result.getTotalNumDays());
-        System.out.printf("Percentage %f %%", result.getPercentage());
-    }
+
 
 }
